@@ -764,7 +764,8 @@ class Builder
         // string and not as a parameterized place-holder to be replaced by the PDO.
         foreach ($values as $value) {
             if (! $value instanceof Expression) {
-                $this->addBinding($value, 'where');
+                // $this->addBinding($value, 'where');
+                $this->addBinding(is_array($value) ? head($value) : $value, 'where');
             }
         }
 
@@ -908,7 +909,8 @@ class Builder
 
         $this->wheres[] = compact('column', 'type', 'boolean', 'not');
 
-        $this->addBinding($values, 'where');
+        // $this->addBinding($values, 'where');
+        $this->addBinding(array_slice($this->cleanBindings($values), 0, 2), 'where');
 
         return $this;
     }
@@ -993,6 +995,8 @@ class Builder
             $value, $operator, func_num_args() == 2
         );
 
+         $value = is_array($value) ? head($value) : $value;
+
         return $this->whereDate($column, $operator, $value, 'or');
     }
 
@@ -1007,6 +1011,8 @@ class Builder
      */
     public function whereTime($column, $operator, $value, $boolean = 'and')
     {
+        $value = is_array($value) ? head($value) : $value;
+
         return $this->addDateBasedWhere('Time', $column, $operator, $value, $boolean);
     }
 
@@ -1042,6 +1048,8 @@ class Builder
             $value, $operator, func_num_args() == 2
         );
 
+        $value = is_array($value) ? head($value) : $value;
+
         return $this->addDateBasedWhere('Day', $column, $operator, $value, $boolean);
     }
 
@@ -1060,6 +1068,8 @@ class Builder
             $value, $operator, func_num_args() == 2
         );
 
+        $value = is_array($value) ? head($value) : $value;
+
         return $this->addDateBasedWhere('Month', $column, $operator, $value, $boolean);
     }
 
@@ -1077,6 +1087,8 @@ class Builder
         list($value, $operator) = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() == 2
         );
+
+        $value = is_array($value) ? head($value) : $value;
 
         return $this->addDateBasedWhere('Year', $column, $operator, $value, $boolean);
     }
@@ -1357,7 +1369,8 @@ class Builder
         $this->havings[] = compact('type', 'column', 'operator', 'value', 'boolean');
 
         if (! $value instanceof Expression) {
-            $this->addBinding($value, 'having');
+            // $this->addBinding($value, 'having');
+            $this->addBinding(is_array($value) ? head($value) : $value, 'having');
         }
 
         return $this;
